@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบขออนุญาตเข้าทำงาน - Work Permit System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        .nav-brand {
+            color: white;
+            font-size: 1.5em;
+            font-weight: bold;
+            text-decoration: none;
+        }
+        
+        .nav-menu {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        
+        .nav-link:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+        
+        .nav-link.active {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #ff6b6b, #ffa500);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .risk-level {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .risk-option {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .risk-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .risk-label {
+            display: block;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .risk-option input[type="radio"]:checked + .risk-label {
+            border-color: #667eea;
+            background: #f8f9ff;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .risk-low { border-left: 4px solid #10b981; }
+        .risk-medium { border-left: 4px solid #f59e0b; }
+        .risk-high { border-left: 4px solid #ef4444; }
+
+        .submit-section {
+            background: #f8f9fa;
+            padding: 30px;
+            margin: 0 -40px -40px -40px;
+            border-top: 1px solid #e1e5e9;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .submit-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .loading {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #ffffff40;
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .status-message {
+            margin-top: 20px;
+            padding: 16px;
+            border-radius: 10px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .status-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .status-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+
+        .auth-codes {
+            background: #eff6ff;
+            border: 1px solid #dbeafe;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .auth-codes h4 {
+            color: #1e40af;
+            margin-bottom: 10px;
+        }
+
+        .code-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .code-item {
+            background: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            border-left: 3px solid #3b82f6;
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-menu {
+                gap: 10px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .nav-link {
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .risk-level {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">🏭 Work Permit System</a>
+            
+            <ul class="nav-menu">
+                <li><a href="index.html" class="nav-link active" id="nav-form">📝 ส่งคำขอ</a></li>
+                <li><a href="approval.html" class="nav-link" id="nav-approval">✅ อนุมัติคำขอ</a></li>
+                <li><a href="status.html" class="nav-link" id="nav-status">🔍 ตรวจสอบสถานะ</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>🏭 ระบบขออนุญาตเข้าทำงาน</h1>
+            <p>Work Permit Request System</p>
+        </div>
+
+        <div class="form-container">
+            <form id="workPermitForm">
+                <!-- ข้อมูลผู้ขออนุญาต -->
+                <div class="form-group">
+                    <h3 style="margin-bottom: 20px; color: #333;">👤 ข้อมูลผู้ขออนุญาต</h3>
+                    
+                    <div class="form-row">
+                        <div>
+                            <label for="requestorName">ชื่อ-สกุล ผู้ขออนุญาต *</label>
+                            <input type="text" id="requestorName" name="requestorName" required>
+                        </div>
+                        <div>
+                            <label for="company">ชื่อบริษัท/หน่วยงาน *</label>
+                            <input type="text" id="company" name="company" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div>
+                            <label for="phone">หมายเลขโทรศัพท์ *</label>
+                            <input type="tel" id="phone" name="phone" required>
+                        </div>
+                        <div>
+                            <label for="email">อีเมล *</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- รหัสอนุญาต -->
+                <div class="form-group">
+                    <label for="authCode">รหัสอนุญาต (Authorization Code) *</label>
+                    <select id="authCode" name="authCode" required>
+                        <option value="">-- เลือกรหัสอนุญาต --</option>
+                        <option value="WP001">WP001 - ฝ่ายบำรุงรักษา</option>
+                        <option value="WP002">WP002 - ผู้รับเหมา</option>
+                        <option value="WP003">WP003 - ฝ่ายทำความสะอาด</option>
+                        <option value="WP004">WP004 - ฝ่าย IT</option>
+                        <option value="WP005">WP005 - ฉุกเฉิน</option>
+                    </select>
+                    
+                    <div class="auth-codes">
+                        <h4>📋 รหัสอนุญาตที่มีอยู่:</h4>
+                        <div class="code-list">
+                            <div class="code-item">WP001 - ฝ่ายบำรุงรักษา</div>
+                            <div class="code-item">WP002 - ผู้รับเหมา</div>
+                            <div class="code-item">WP003 - ฝ่ายทำความสะอาด</div>
+                            <div class="code-item">WP004 - ฝ่าย IT</div>
+                            <div class="code-item">WP005 - ฉุกเฉิน</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- รายละเอียดงาน -->
+                <div class="form-group">
+                    <h3 style="margin-bottom: 20px; color: #333;">🔧 รายละเอียดงาน</h3>
+                    
+                    <div class="form-row">
+                        <div>
+                            <label for="workDate">วันที่ทำงาน *</label>
+                            <input type="date" id="workDate" name="workDate" required>
+                        </div>
+                        <div>
+                            <label for="workTime">เวลาทำงาน *</label>
+                            <input type="text" id="workTime" name="workTime" placeholder="เช่น 08:00-17:00" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="workLocation">สถานที่ทำงาน *</label>
+                        <input type="text" id="workLocation" name="workLocation" placeholder="ระบุสถานที่ทำงานโดยละเอียด" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="workDescription">ลักษณะงานที่ทำ *</label>
+                        <textarea id="workDescription" name="workDescription" placeholder="อธิบายลักษณะงานที่จะทำโดยละเอียด..." required></textarea>
+                    </div>
+                </div>
+
+                <!-- ระดับความเสี่ยง -->
+                <div class="form-group">
+                    <label>ระดับความเสี่ยงของงาน *</label>
+                    <div class="risk-level">
+                        <div class="risk-option">
+                            <input type="radio" id="riskLow" name="riskLevel" value="low" required>
+                            <label for="riskLow" class="risk-label risk-low">
+                                🟢 ต่ำ<br>
+                                <small>งานทั่วไป ไม่มีความเสี่ยง</small>
+                            </label>
+                        </div>
+                        <div class="risk-option">
+                            <input type="radio" id="riskMedium" name="riskLevel" value="medium" required>
+                            <label for="riskMedium" class="risk-label risk-medium">
+                                🟡 ปานกลาง<br>
+                                <small>มีความเสี่ยงบางส่วน</small>
+                            </label>
+                        </div>
+                        <div class="risk-option">
+                            <input type="radio" id="riskHigh" name="riskLevel" value="high" required>
+                            <label for="riskHigh" class="risk-label risk-high">
+                                🔴 สูง<br>
+                                <small>งานที่มีความเสี่ยงสูง</small>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="riskDetails">รายละเอียดความเสี่ยงและมาตรการป้องกัน</label>
+                    <textarea id="riskDetails" name="riskDetails" placeholder="ระบุรายละเอียดความเสี่ยงและวิธีการป้องกัน (ถ้ามี)"></textarea>
+                </div>
+
+                <div class="submit-section">
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <span id="submitText">📝 ส่งคำขออนุญาต</span>
+                        <div class="loading" id="loadingSpinner">
+                            <div class="spinner"></div>
+                            <span>กำลังส่งข้อมูล...</span>
+                        </div>
+                    </button>
+                    
+                    <div class="status-message" id="statusMessage"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // **ใส่ Web App URL ของคุณตรงนี้**
+        const WEB_APP_URL = 'YOUR_WEB_APP_URL_HERE'; // แทนที่ด้วย URL จริง
+        const API_KEY = 'MyPassword500';
+
+        // ตั้งค่าวันที่ขั้นต่ำเป็นวันนี้
+        document.getElementById('workDate').min = new Date().toISOString().split('T')[0];
+
+        // ส่งฟอร์ม
+        document.getElementById('workPermitForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const submitText = document.getElementById('submitText');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const statusMessage = document.getElementById('statusMessage');
+            
+            // แสดง Loading
+            submitBtn.disabled = true;
+            submitText.style.display = 'none';
+            loadingSpinner.style.display = 'flex';
+            statusMessage.style.display = 'none';
+            
+            try {
+                // รวบรวมข้อมูลจากฟอร์ม
+                const formData = new FormData();
+                formData.append('action', 'submit_request');
+                formData.append('apiKey', API_KEY);
+                formData.append('requestorName', document.getElementById('requestorName').value);
+                formData.append('company', document.getElementById('company').value);
+                formData.append('phone', document.getElementById('phone').value);
+                formData.append('email', document.getElementById('email').value);
+                formData.append('authCode', document.getElementById('authCode').value);
+                formData.append('workDate', document.getElementById('workDate').value);
+                formData.append('workTime', document.getElementById('workTime').value);
+                formData.append('workLocation', document.getElementById('workLocation').value);
+                formData.append('workDescription', document.getElementById('workDescription').value);
+                formData.append('riskLevel', document.querySelector('input[name="riskLevel"]:checked').value);
+                formData.append('riskDetails', document.getElementById('riskDetails').value);
+                formData.append('submittedBy', document.getElementById('email').value);
+                
+                // ส่งข้อมูลไปยัง Google Apps Script
+                const response = await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // สำเร็จ
+                    statusMessage.className = 'status-message status-success';
+                    statusMessage.innerHTML = `
+                        <strong>✅ ส่งคำขออนุญาตสำเร็จ!</strong><br>
+                        รหัสคำขอ: <strong>${result.data.requestId}</strong><br>
+                        สถานะ: รออนุมัติ<br>
+                        <small>อีเมลแจ้งเตือนจะถูกส่งไปยังผู้ดูแลระบบ</small>
+                    `;
+                    statusMessage.style.display = 'block';
+                    
+                    // ล้างฟอร์ม
+                    this.reset();
+                    
+                } else {
+                    // ผิดพลาด
+                    statusMessage.className = 'status-message status-error';
+                    statusMessage.innerHTML = `<strong>❌ เกิดข้อผิดพลาด:</strong> ${result.message}`;
+                    statusMessage.style.display = 'block';
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                statusMessage.className = 'status-message status-error';
+                statusMessage.innerHTML = `<strong>❌ เกิดข้อผิดพลาด:</strong> ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้`;
+                statusMessage.style.display = 'block';
+            }
+            
+            // ซ่อน Loading
+            submitBtn.disabled = false;
+            submitText.style.display = 'inline';
+            loadingSpinner.style.display = 'none';
+        });
+
+        // ตรวจสอบการเปลี่ยนแปลงของระดับความเสี่ยง
+        document.querySelectorAll('input[name="riskLevel"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const riskDetails = document.getElementById('riskDetails');
+                if (this.value === 'high') {
+                    riskDetails.required = true;
+                    riskDetails.placeholder = 'กรุณาระบุรายละเอียดความเสี่ยงและมาตรการป้องกัน (จำเป็น)';
+                } else {
+                    riskDetails.required = false;
+                    riskDetails.placeholder = 'ระบุรายละเอียดความเสี่ยงและวิธีการป้องกัน (ถ้ามี)';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
